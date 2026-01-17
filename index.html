@@ -1,307 +1,207 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enneagram Mizaç Testi</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f0f0f0;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 24px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .space-y-4 > * + * {
-            margin-top: 1rem;
-        }
-        .title {
-            color: #9333ea;
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-        }
-        .button {
-            background-color: #9333ea;
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 1rem;
-        }
-        .button:hover {
-            background-color: #7e22ce;
-        }
-        .input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            margin-top: 0.5rem;
-        }
-        .radio-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        .error {
-            background-color: #fee2e2;
-            border: 1px solid #ef4444;
-            color: #dc2626;
-            padding: 8px;
-            border-radius: 4px;
-            margin-bottom: 1rem;
-        }
-        .nav-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 1rem;
-        }
-        .results {
-            margin-top: 2rem;
-        }
-        .suggestion {
-            background-color: #f3e8ff;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guided Dialogue</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
-<body>
-    <div class="container" id="app"></div>
+<body class="bg-slate-100 text-slate-900">
+  <div id="root" class="min-h-screen"></div>
 
-    <script>
-        const questions = [
-            { text: "Ödevlerimde veya projelerimde düzenli ve doğru olmaya çok dikkat ederim.", mizac: 1 },
-            { text: "Kuralların ihlal edilmesi beni rahatsız eder; hataları düzeltmek isterim.", mizac: 1 },
-            { text: "Yakın çevremde yardıma ihtiyacı olan birini görünce hemen destek olmaya çalışırım.", mizac: 2 },
-            { text: "Sevdiklerim tarafından takdir ve sevgi görmeye çok önem veririm.", mizac: 2 },
-            { text: "Hedeflerime ulaşmak beni motive eder; 'Daha iyi nasıl olabilirim?' diye sık sık düşünürüm.", mizac: 3 },
-            { text: "Başarılı olunca takdir ve beğeni bekler, dışarıdaki imajıma önem veririm.", mizac: 3 },
-            { text: "Kimi zaman kendimi farklı ve özel hisseder, sıradan olmaktan hoşlanmam.", mizac: 4 },
-            { text: "Duygularımı oldukça yoğun yaşar ve sanatsal/yaratıcı uğraşları severim.", mizac: 4 },
-            { text: "Yeni şeyler öğrenmek, araştırma yapmak ve kendi başıma zaman geçirmek benim için keyiflidir.", mizac: 5 },
-            { text: "Çevremde olup biteni gözlemleyip anlamayı sever, hemen tepki vermekten kaçınırım.", mizac: 5 },
-            { text: "Karşılaşabileceğim sorunlara karşı hazırlıklı olmak ister, güvendiğim insanların desteğini ararım.", mizac: 6 },
-            { text: "Belirsizlik veya beklenmedik durumlar beni tedirgin edebilir; plan yapmayı severim.", mizac: 6 },
-            { text: "Çabuk sıkılır, yeni ve eğlenceli bir şey arar, heyecan verici fikirlere kapılırım.", mizac: 7 },
-            { text: "Gelecek için çok planım vardır; rutin ve sıkıcı işlerden uzak durmaya çalışırım.", mizac: 7 },
-            { text: "Haksızlığa ve adaletsizliğe tahammül edemem, gerekirse müdahale ederim.", mizac: 8 },
-            { text: "Baskın ve kararlı biri olarak görülürüm; doğru bildiğimi savunmaktan kaçınmam.", mizac: 8 },
-            { text: "Arkadaşlar arasında veya ailede tartışma çıktığında ortamı yumuşatmaya çalışırım.", mizac: 9 },
-            { text: "Kendi isteklerimdense başkalarının isteklerine uyma eğilimindeyim; huzur benim için önemlidir.", mizac: 9 }
+  <script type="text/babel">
+    const scenarios = [
+      {
+        id: "meeting",
+        label: "İlk Tanışma",
+        steps: [
+          "Merhaba! Bugün tanışma görüşmesi için buradayım. Bana kısaca kendinden bahseder misin?",
+          "Teşekkürler! Şu anda seni en çok motive eden şey nedir?",
+          "Harika. Bu görüşmeden beklentin nedir?"
+        ]
+      },
+      {
+        id: "support",
+        label: "Destek Talebi",
+        steps: [
+          "Merhaba! Hangi konuda destek almak istiyorsun?",
+          "Anladım. Bu konuda şimdiye kadar neler denedin?",
+          "Tamam. Sana nasıl bir çözüm en çok yardımcı olurdu?"
+        ]
+      },
+      {
+        id: "feedback",
+        label: "Geri Bildirim",
+        steps: [
+          "Merhaba! Son deneyimini nasıl özetlersin?",
+          "Peki, seni en çok zorlayan nokta neydi?",
+          "Teşekkürler. Bir sonraki adımda ne görmek isterdin?"
+        ]
+      }
+    ];
+
+    function App() {
+      const [selectedScenario, setSelectedScenario] = React.useState("");
+      const [messages, setMessages] = React.useState([]);
+      const [stepIndex, setStepIndex] = React.useState(0);
+      const [inputValue, setInputValue] = React.useState("");
+
+      const scenario = scenarios.find((item) => item.id === selectedScenario);
+
+      const handleScenarioChange = (event) => {
+        const value = event.target.value;
+        setSelectedScenario(value);
+        setInputValue("");
+        if (value) {
+          const firstStep = scenarios.find((item) => item.id === value).steps[0];
+          setMessages([
+            {
+              id: "system-0",
+              role: "system",
+              text: firstStep
+            }
+          ]);
+          setStepIndex(0);
+        } else {
+          setMessages([]);
+          setStepIndex(0);
+        }
+      };
+
+      const handleSubmit = (event) => {
+        event.preventDefault();
+        if (!inputValue.trim() || !scenario) {
+          return;
+        }
+
+        const nextMessages = [
+          ...messages,
+          {
+            id: `user-${Date.now()}`,
+            role: "user",
+            text: inputValue.trim()
+          }
         ];
 
-        const suggestions = {
-            1: "Mükemmeliyetçi yapınızı dengede tutmaya çalışın. Kendinize ve başkalarına karşı daha esnek olun.",
-            2: "Başkalarına yardım ederken kendi ihtiyaçlarınızı da göz önünde bulundurun.",
-            3: "Başarı odaklı yaklaşımınızı korurken, kendinizi sadece başarılarınızla değerlendirmeyin.",
-            4: "Duygusal derinliğinizi koruyun ama aşırı duygusallıktan kaçının.",
-            5: "Bilgi birikiminizi başkalarıyla paylaşın, sosyal ilişkilerinizi güçlendirin.",
-            6: "Güvenlik ihtiyacınızı karşılarken, yeni deneyimlere de açık olun.",
-            7: "Deneyim arayışınızı sürdürün ama sorumluluklarınızı da ihmal etmeyin.",
-            8: "Liderlik özelliklerinizi koruyun ama başkalarının hassasiyetlerine de özen gösterin.",
-            9: "Uyumlu yapınızı koruyun ama kendi isteklerinizi de ifade etmekten çekinmeyin."
-        };
+        const nextStepIndex = stepIndex + 1;
+        if (scenario.steps[nextStepIndex]) {
+          nextMessages.push({
+            id: `system-${nextStepIndex}`,
+            role: "system",
+            text: scenario.steps[nextStepIndex]
+          });
+        }
 
-        let currentStage = 'start';
-        let currentAge = '';
-        let currentQuestion = 0;
-        let answers = new Array(questions.length).fill(0);
-        let results = null;
-        let error = '';
+        setMessages(nextMessages);
+        setStepIndex(nextStepIndex);
+        setInputValue("");
+      };
 
-        function renderStart() {
-            return `
-                <div class="space-y-4">
-                    <h2 class="title">Enneagram Mizaç Testi</h2>
-                    <p>
-                        Hoş geldiniz! Bu test, 10-18 yaş arası öğrenciler için hazırlanmıştır.
-                        9 mizaç tipinden hangisine daha yatkın olduğunu öğrenebilir, kendine dair yeni keşifler yapabilirsin.
-                    </p>
-                    <div>
-                        <label>Yaşınızı giriniz (10-18):</label>
-                        <input type="number" id="ageInput" class="input" value="${currentAge}" min="10" max="18">
-                    </div>
-                    <button onclick="handleStart()" class="button">Teste Başla</button>
+      const isChatDisabled = !scenario;
+      const isCompleted = scenario && stepIndex >= scenario.steps.length;
+
+      return (
+        <div className="mx-auto flex min-h-screen max-w-3xl flex-col gap-6 px-6 py-10">
+          <header className="rounded-2xl bg-white p-6 shadow-sm">
+            <h1 className="text-2xl font-semibold text-slate-800">Guided Dialogue</h1>
+            <p className="mt-2 text-sm text-slate-600">
+              Bir senaryo seç ve yönlendirilmiş diyalog akışını başlat.
+            </p>
+          </header>
+
+          <section className="rounded-2xl bg-white p-6 shadow-sm">
+            <label className="text-sm font-medium text-slate-700">Senaryo seçimi</label>
+            <select
+              value={selectedScenario}
+              onChange={handleScenarioChange}
+              className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200"
+            >
+              <option value="">Senaryo seçiniz</option>
+              {scenarios.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          </section>
+
+          <section className="flex flex-1 flex-col rounded-2xl bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-slate-800">Diyalog Akışı</h2>
+              {scenario ? (
+                <span className="rounded-full bg-violet-100 px-3 py-1 text-xs font-medium text-violet-700">
+                  {scenario.label}
+                </span>
+              ) : (
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-500">
+                  Senaryo seçilmedi
+                </span>
+              )}
+            </div>
+
+            <div className="mt-4 flex-1 space-y-3 overflow-y-auto rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4">
+              {messages.length === 0 ? (
+                <div className="text-sm text-slate-500">
+                  Chat başlamadan önce bir senaryo seçmelisin.
                 </div>
-            `;
-        }
-
-        function renderTest() {
-            return `
-                <div class="space-y-4">
-                    <h3>Soru ${currentQuestion + 1}/${questions.length}</h3>
-                    <p>${questions[currentQuestion].text}</p>
-                    <div class="radio-group">
-                        ${[1, 2, 3].map(value => `
-                            <label>
-                                <input type="radio" name="answer" value="${value}" 
-                                    ${answers[currentQuestion] === value ? 'checked' : ''}>
-                                (${value}) ${value === 1 ? 'Hiç uymuyor' : value === 2 ? 'Kısmen uyuyor' : 'Tamamen uyuyor'}
-                            </label>
-                        `).join('')}
-                    </div>
-                    <div class="nav-buttons">
-                        ${currentQuestion > 0 ? `
-                            <button onclick="handlePrev()" class="button">Geri</button>
-                        ` : '<div></div>'}
-                        <button onclick="handleNext()" class="button">
-                            ${currentQuestion === questions.length - 1 ? 'Testi Bitir' : 'İleri'}
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderResults() {
-            const sortedResults = [...results].sort((a, b) => b.percentage - a.percentage);
-            const dominantMizac = sortedResults[0].mizac;
-
-            return `
-                <div class="results">
-                    <h3 class="title">Sonuçlar</h3>
-                    <div style="height: 300px;">
-                        <canvas id="resultsChart"></canvas>
-                    </div>
-                    <div class="suggestion">
-                        <h4>Baskın Mizaç Önerileri:</h4>
-                        <p>${suggestions[dominantMizac]}</p>
-                    </div>
-                </div>
-            `;
-        }
-
-        function validateAge(age) {
-            const parsedAge = parseInt(age);
-            if (!parsedAge || parsedAge < 10 || parsedAge > 18) {
-                error = 'Lütfen 10-18 yaş arasında bir değer giriniz.';
-                return false;
-            }
-            error = '';
-            return true;
-        }
-
-        function handleStart() {
-            const ageInput = document.getElementById('ageInput');
-            if (validateAge(ageInput.value)) {
-                currentAge = ageInput.value;
-                currentStage = 'test';
-                render();
-            }
-        }
-
-        function handleAnswer(value) {
-            answers[currentQuestion] = parseInt(value);
-        }
-
-        function handleNext() {
-            if (answers[currentQuestion] === 0) {
-                error = 'Lütfen bir seçenek işaretleyiniz.';
-                render();
-                return;
-            }
-            error = '';
-            if (currentQuestion < questions.length - 1) {
-                currentQuestion++;
-            } else {
-                calculateResults();
-                currentStage = 'results';
-            }
-            render();
-        }
-
-        function handlePrev() {
-            if (currentQuestion > 0) {
-                currentQuestion--;
-                render();
-            }
-        }
-
-        function calculateResults() {
-            const mizacScores = {};
-            for (let i = 1; i <= 9; i++) {
-                mizacScores[i] = 0;
-            }
-
-            questions.forEach((q, idx) => {
-                mizacScores[q.mizac] += answers[idx];
-            });
-
-            const totalScore = Object.values(mizacScores).reduce((a, b) => a + b, 0);
-            results = Object.entries(mizacScores).map(([mizac, score]) => ({
-                mizac: parseInt(mizac),
-                percentage: ((score / totalScore) * 100).toFixed(1)
-            }));
-        }
-
-        function render() {
-            const app = document.getElementById('app');
-            if (error) {
-                app.innerHTML = `<div class="error">${error}</div>` + renderCurrentStage();
-            } else {
-                app.innerHTML = renderCurrentStage();
-            }
-
-            if (currentStage === 'test') {
-                const radios = document.getElementsByName('answer');
-                radios.forEach(radio => {
-                    radio.addEventListener('change', (e) => handleAnswer(e.target.value));
-                });
-            } else if (currentStage === 'results' && results) {
-                renderChart();
-            }
-        }
-
-        function renderCurrentStage() {
-            switch (currentStage) {
-                case 'start':
-                    return renderStart();
-                case 'test':
-                    return renderTest();
-                case 'results':
-                    return renderResults();
-            }
-        }
-
-        function renderChart() {
-            const ctx = document.getElementById('resultsChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: results.map(r => `Tip ${r.mizac}`),
-                    datasets: [{
-                        label: 'Yüzde (%)',
-                        data: results.map(r => r.percentage),
-                        backgroundColor: '#9333ea',
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100
-                        }
+              ) : (
+                messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={
+                      message.role === "system"
+                        ? "rounded-xl bg-white px-4 py-3 text-sm text-slate-700 shadow-sm"
+                        : "ml-auto max-w-[75%] rounded-xl bg-violet-600 px-4 py-3 text-sm text-white shadow-sm"
                     }
-                }
-            });
-        }
+                  >
+                    <p className="font-medium">
+                      {message.role === "system" ? "Sistem" : "Sen"}
+                    </p>
+                    <p className="mt-1">{message.text}</p>
+                  </div>
+                ))
+              )}
+            </div>
 
-        // Initialize
-        render();
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+            <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-3">
+              <textarea
+                value={inputValue}
+                onChange={(event) => setInputValue(event.target.value)}
+                placeholder={
+                  isChatDisabled
+                    ? "Önce bir senaryo seçmelisin"
+                    : isCompleted
+                    ? "Diyalog tamamlandı"
+                    : "Cevabını yaz..."
+                }
+                disabled={isChatDisabled || isCompleted}
+                rows="3"
+                className="w-full resize-none rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200 disabled:bg-slate-100"
+              ></textarea>
+              <button
+                type="submit"
+                disabled={isChatDisabled || isCompleted || !inputValue.trim()}
+                className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+              >
+                {isCompleted ? "Tamamlandı" : "Gönder"}
+              </button>
+            </form>
+
+            {scenario && (
+              <p className="mt-4 text-xs text-slate-500">
+                Adım {Math.min(stepIndex + 1, scenario.steps.length)} / {scenario.steps.length}
+              </p>
+            )}
+          </section>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
 </body>
 </html>
